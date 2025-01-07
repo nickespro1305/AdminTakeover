@@ -1,48 +1,7 @@
 #!python3
 
+from exploits.AdminBypass.main import link, run
 import argparse
-import os
-import shutil
-import subprocess
-
-def link(input_exe, output_file):
-    """
-    Crea un archivo .bat en el subdirectorio tmp con el contenido especificado
-    y copia el archivo .exe en la carpeta tmp.
-    """
-    # Obtén la ruta absoluta del archivo .exe
-    input_exe_path = os.path.abspath(input_exe)
-
-    # Verifica si el archivo .exe existe
-    if not os.path.exists(input_exe_path):
-        print(f"Error: El archivo '{input_exe}' no existe.")
-        return
-
-    # Obtén la ruta del directorio donde está instalado AdminTakeover
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    tmp_dir = os.path.join(base_dir, "tmp")
-    os.makedirs(tmp_dir, exist_ok=True)  # Crea la carpeta tmp si no existe
-
-    # Copia el archivo .exe a la carpeta tmp
-    exe_name = os.path.basename(input_exe)
-    tmp_exe_path = os.path.join(tmp_dir, exe_name)
-    shutil.copy(input_exe_path, tmp_exe_path)
-
-    # Cambia la extensión del archivo de salida a .bat
-    bat_file_name = f"{os.path.splitext(output_file)[0]}.bat"
-    bat_file_path = os.path.join(tmp_dir, bat_file_name)
-
-    # Contenido del archivo .bat con el nombre del archivo .exe copiado a tmp
-    bat_content = f"""Set __COMPAT_LAYER=RunAsInvoker
-Start {tmp_exe_path}
-"""
-
-    # Escribir el archivo .bat
-    with open(bat_file_path, "w") as bat_file:
-        bat_file.write(bat_content)
-
-    print(f"Archivo .bat creado en: {bat_file_path}")
-    print(f"Archivo .exe copiado a: {tmp_exe_path}")
 
 parser = argparse.ArgumentParser(
         description="Bypass windows administrator password requirement popup"
@@ -54,27 +13,6 @@ subparsers = parser.add_subparsers(
     dest="command",
     required=True
 )
-
-def run(output_file):
-    """
-    Ejecuta un archivo .bat desde la carpeta tmp.
-    """
-    # Ruta de la carpeta tmp
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    tmp_dir = os.path.join(base_dir, "tmp")
-
-    # Ruta del archivo .bat
-    bat_file_name = f"{os.path.splitext(output_file)[0]}.bat"
-    bat_file_path = os.path.join(tmp_dir, bat_file_name)
-
-    # Verificar si el archivo .bat existe
-    if not os.path.exists(bat_file_path):
-        print(f"Error: El archivo .bat '{bat_file_path}' no se encuentra.")
-        return
-
-    # Ejecutar el archivo .bat usando subprocess
-    print(f"Ejecutando: {bat_file_path}")
-    subprocess.Popen(bat_file_path, shell=True)
 
 # Subcomando: link
 link_parser = subparsers.add_parser("link", help="link the executable file")
@@ -89,6 +27,6 @@ args = parser.parse_args()
 
 # Ejecutar comandos
 if args.command == "link":
-    link(args.input_link, args.output_link)
+    link(args.input_link, args.output_link, 1)
 elif args.command == "run":
     run(args.input_run)
