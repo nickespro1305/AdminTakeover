@@ -1,6 +1,6 @@
 #!python3
 
-from exploits.AdminBypass.main import link, run
+from lib.run import run
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -14,19 +14,20 @@ subparsers = parser.add_subparsers(
     required=True
 )
 
-# Subcomando: link
-link_parser = subparsers.add_parser("link", help="link the executable file")
-link_parser.add_argument("input_link", type=str, help="executable")
-link_parser.add_argument("output_link", type=str, help="link tag name")
+# Subcomando: hello
+hello_parser = subparsers.add_parser("hello", help="link the executable file")
 
 # Subcomando: run
-run_parser = subparsers.add_parser("run", help="run a link")
-run_parser.add_argument("input_run", type=str, help="linked tag")
+run_parser = subparsers.add_parser("run", help="run a exploit")
+run_parser.add_argument("EXPLOIT", type=str, help="Exploit")
+run_parser.add_argument("MODE", type=str, help="mode")
+run_parser.add_argument("INPUT1", type=str, help="input1", nargs="?")
+run_parser.add_argument("INPUT2", type=str, help="input2", nargs="?")
 
 args = parser.parse_args()
 
 # Ejecutar comandos
-if args.command == "link":
-    link(args.input_link, args.output_link, 1)
+if args.command == "hello":
+    print("hello")
 elif args.command == "run":
-    run(args.input_run)
+    run(args.EXPLOIT,args.MODE,args.INPUT1,args.INPUT2)

@@ -1,0 +1,78 @@
+#!python3
+import psutil
+import subprocess
+import platform
+import os
+
+def download_file(url, archivo_destino):
+    try:
+        # Ejecutar el comando curl para descargar el archivo
+        resultado = subprocess.run(
+            ['curl', '-o', archivo_destino, url],
+            capture_output=True,
+            text=True
+        )
+
+        # Comprobar si hubo algún error durante la ejecución
+        if resultado.returncode == 0:
+            print(f"Archivo descargado exitosamente a {archivo_destino}")
+        else:
+            print(f"Error en la descarga: {resultado.stderr}")
+    
+    except Exception as e:
+        print(f"Error al ejecutar curl: {e}")
+
+##############################################
+#                                            #
+#                                            #
+##############################################
+
+print("Welcome to the AdminTakeover instalation assistant")
+print("Please Select a drive to start the install, just put the letter")
+
+for particion in psutil.disk_partitions(all=False):
+    print(f"Disk: {particion.device}")
+    print(f"  MountPoint: {particion.mountpoint}")
+    try:
+        uso = psutil.disk_usage(particion.mountpoint)
+        print(f"  Total Space: {uso.total / (1024**3):.2f} GB")
+        print(f"  Used Percentage: {uso.percent}%")
+    except PermissionError:
+        print("  error tryng to access the drive")
+    print()
+
+SELECTED_DISK = input("[*]")
+
+# confirmacion de disco
+for particion in psutil.disk_partitions(all=False):
+    if particion.device.startswith(SELECTED_DISK.upper()):
+        print(f"Información del disco {SELECTED_DISK.upper()}:")
+        print(f"  Punto de montaje: {particion.mountpoint}")
+        print(f"  Sistema de archivos: {particion.fstype}")
+        try:
+            uso = psutil.disk_usage(particion.mountpoint)
+            print(f"  Espacio total: {uso.total / (1024**3):.2f} GB")
+            print(f"  Espacio usado: {uso.used / (1024**3):.2f} GB")
+            print(f"  Espacio libre: {uso.free / (1024**3):.2f} GB")
+            print(f"  Porcentaje usado: {uso.percent}%")
+        except PermissionError:
+            print("  No se tienen permisos para acceder a esta partición.")
+
+print(f"Are you sure than you want to continue with {SELECTED_DISK}?")
+CONFIRMATION = input("[y/N]")
+
+if CONFIRMATION == "Y" or CONFIRMATION == "y":
+    # descarga de paquetes necesarios
+    print("please wait, the program is installing on the selected drive, it can taka a while")
+    print("STEP 1/8, creating default folders")
+    print("STEP 2/8, downloading main files")
+    print("STEP 3/8, downloading main dependences for compilation")
+    print("STEP 4/8, installing pip requirements for compilation")
+    print("STEP 5/8, compilating program")
+    print("STEP 6/8, copyng compiled files")
+    print("STEP 7/8, testing compilated files")
+    print("STEP 8/8, cleaning up")
+elif CONFIRMATION == "":
+    print("operacion cancelada con exito")
+else:
+    print("operacion cancelada con exito")
