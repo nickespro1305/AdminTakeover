@@ -1,8 +1,11 @@
 #!python3
 import psutil
 import subprocess
-import platform
 import os
+
+DOWNLOAD_URL1="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/AdminTakeover.py"
+DOWNLOAD_URL2="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/run.py"
+DOWNLOAD_URL3=""
 
 def download_file(url, archivo_destino):
     try:
@@ -64,14 +67,39 @@ CONFIRMATION = input("[y/N]")
 if CONFIRMATION == "Y" or CONFIRMATION == "y":
     # descarga de paquetes necesarios
     print("please wait, the program is installing on the selected drive, it can taka a while")
-    print("STEP 1/8, creating default folders")
-    print("STEP 2/8, downloading main files")
-    print("STEP 3/8, downloading main dependences for compilation")
-    print("STEP 4/8, installing pip requirements for compilation")
-    print("STEP 5/8, compilating program")
-    print("STEP 6/8, copyng compiled files")
-    print("STEP 7/8, testing compilated files")
-    print("STEP 8/8, cleaning up")
+    print(os.getcwd())
+    os.chdir(f"{SELECTED_DISK}:/")
+    print("STEP 1/9, creating default folders")
+    os.mkdir("lib")
+    os.mkdir("exploits")
+    os.mkdir("output")
+    os.mkdir("keys")
+
+    print("STEP 2/9, downloading main files")
+    download_file(DOWNLOAD_URL1, "AdminTakeover.py")
+    os.chdir("lib")
+    download_file(DOWNLOAD_URL2, "run.py")
+    os.chdir("..")
+
+    print("STEP 3/9, downloading main dependences for compilation")
+    subprocess.run(['python3', '-m', 'pip', 'install', 'pip'], shell=True, check=True)
+
+    print("STEP 4/9, creating venv enviroment")
+    subprocess.run(['python3', '-m', 'venv', 'venv'], shell=True, check=True)
+    os.chdir("venv/Scripts")
+    subprocess.run(['activate.bat'], shell=True, check=True)
+    os.chdir("..")
+    os.chdir("..")
+
+    print("STEP 5/9, installing pip requirements for compilation")
+    subprocess.run(['pip', 'install', 'rich', 'pyinstaller'], shell=True, check=True)
+
+    print("STEP 6/9, compilating program")
+    subprocess.run(['pyinstaller', '--onefile', 'AdminTakeover.py'], shell=True, check=True)
+
+    print("STEP 7/9, copyng compiled files")
+    print("STEP 8/9, testing compilated files")
+    print("STEP 9/9, cleaning up")
 elif CONFIRMATION == "":
     print("operacion cancelada con exito")
 else:
