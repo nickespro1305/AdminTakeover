@@ -5,4 +5,5 @@ except ModuleNotFoundError:
 
 def run(EXPLOIT, MODE, INPUT1, INPUT2):
         if EXPLOIT == "AdminBypass":
-            AdminBypass(MODE, INPUT1, INPUT2)
+            if AdminBypass:
+                AdminBypass(MODE, INPUT1, INPUT2)
