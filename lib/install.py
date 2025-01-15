@@ -162,7 +162,7 @@ def install(package):
 
             os.chdir(f"exploits")
             os.mkdir(package)
-            os.chdir(f"exploits/{package}")
+            os.chdir(f"{package}")
 
             with Progress(
                 TextColumn("[bold blue]{task.description}", justify="right"),
