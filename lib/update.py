@@ -69,7 +69,7 @@ def update():
             task_id_3 = progress.add_task("Downloading plugins keyring", total=100)
             try:
                 process3 = subprocess.Popen(
-                    f"curl -s -k {keys[2]} -o {temp_file_path2}",
+                    f"curl -s -k {keys[2]} -o {temp_file_path3}",
                     shell=True
                 )
                 while process3.poll() is None:
