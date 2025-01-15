@@ -8,11 +8,12 @@ import json
 DOWNLOAD_URL1="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/AdminTakeover.py"
 DOWNLOAD_URL2="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/run.py"
 DOWNLOAD_URL3="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/update.py"
+DOWNLOAD_URL4="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/interactiveFuncs.py"
 
 parent_keytring = [
-    "https://example.com",
-    "https://api.github.com",
-    "https://jsonplaceholder.typicode.com/posts/1"
+    "https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/keys/main.json",
+    "https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/keys/exploits.json",
+    "https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/keys/plugins.json"
 ]
 
 def generate_urls_json(file_path, urls):
@@ -119,6 +120,7 @@ if CONFIRMATION == "Y" or CONFIRMATION == "y":
     os.chdir("lib")
     download_file(DOWNLOAD_URL2, "run.py")
     download_file(DOWNLOAD_URL3, "update.py")
+    download_file(DOWNLOAD_URL4, "interactiveFuncs.py")
     os.chdir("..")
 
     print("STEP 3/10, downloading main dependences for compilation")
@@ -132,7 +134,7 @@ if CONFIRMATION == "Y" or CONFIRMATION == "y":
     os.chdir("..")
 
     print("STEP 5/10, installing pip requirements for compilation")
-    subprocess.run(['pip', 'install', 'rich', 'pyinstaller', 'json', 'shutil', 'psutil'], shell=True, check=True)
+    subprocess.run(['pip', 'install', 'rich', 'pyinstaller', 'psutil'], shell=True, check=True)
 
     print("STEP 6/10, compilating program")
     subprocess.run(['pyinstaller', '--onefile', 'AdminTakeover.py'], shell=True, check=True)
@@ -149,13 +151,14 @@ if CONFIRMATION == "Y" or CONFIRMATION == "y":
     os.chdir("keys")
     message = generate_urls_json("parent-keys.json", parent_keytring)
     print(message)
+    os.chdir("..")
 
     print("STEP 10/10, cleaning up")
     if CLEAN_INSTALL == "Y" or CLEAN_INSTALL == "y":
         # borrar archivos inecesarios
         print("cleaning temp files")
-        os.removedirs("build")
-        os.removedirs("dist")
+        shutil.rmtree("build")
+        shutil.rmtree("dist")
         os.remove("AdminTakeover.py")
         os.remove("AdminTakeover.spec")
     print("AdminTakeover succesfully installed in device")
