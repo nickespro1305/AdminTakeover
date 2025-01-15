@@ -1,5 +1,4 @@
 #!python3
-
 from lib.run import run
 import argparse
 

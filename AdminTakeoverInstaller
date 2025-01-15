@@ -1,6 +1,7 @@
 #!python3
 import psutil
 import subprocess
+import shutil
 import os
 
 DOWNLOAD_URL1="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/AdminTakeover.py"
@@ -11,9 +12,8 @@ def download_file(url, archivo_destino):
     try:
         # Ejecutar el comando curl para descargar el archivo
         resultado = subprocess.run(
-            ['curl', '-o', archivo_destino, url],
-            capture_output=True,
-            text=True
+            ['curl', '-k', '-o', archivo_destino, url],
+            shell=True, check=True
         )
 
         # Comprobar si hubo algún error durante la ejecución
@@ -65,7 +65,15 @@ print(f"Are you sure than you want to continue with {SELECTED_DISK}?")
 CONFIRMATION = input("[y/N]")
 
 if CONFIRMATION == "Y" or CONFIRMATION == "y":
-    # descarga de paquetes necesarios
+    # dejar elegir al usuario el tipo de compilacion deseada
+    # print("select the compilation flavour")
+    # print("[Red]: fastest, DETECTED BY ANTIVIRUS")
+    # print("[Purple]: offuscated, heaviest, requires python on every target to use")
+    # flavour = input("[Red/Purple]")
+    
+    print("Do you want to do a clean install?")
+    CLEAN_INSTALL = input("[y/N]")
+
     print("please wait, the program is installing on the selected drive, it can taka a while")
     print(os.getcwd())
     os.chdir(f"{SELECTED_DISK}:/")
@@ -98,8 +106,18 @@ if CONFIRMATION == "Y" or CONFIRMATION == "y":
     subprocess.run(['pyinstaller', '--onefile', 'AdminTakeover.py'], shell=True, check=True)
 
     print("STEP 7/9, copyng compiled files")
+    os.chdir("dist")
+    shutil.copy("AdminTakeover.exe", "..")
+    os.chdir("..")
+
     print("STEP 8/9, testing compilated files")
+    subprocess.run(['AdminTakeover.exe', 'hello'], shell=True, check=True)
+
     print("STEP 9/9, cleaning up")
+    if CLEAN_INSTALL == "Y" or CLEAN_INSTALL == "y":
+        # borrar archivos inecesarios
+        print("cleaning trash files")
+    print("AdminTakeover succesfully installed in device")
 elif CONFIRMATION == "":
     print("operacion cancelada con exito")
 else:
