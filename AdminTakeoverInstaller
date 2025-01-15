@@ -9,6 +9,7 @@ DOWNLOAD_URL1="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/ref
 DOWNLOAD_URL2="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/run.py"
 DOWNLOAD_URL3="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/update.py"
 DOWNLOAD_URL4="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/interactiveFuncs.py"
+DOWNLOAD_URL5="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/install.py"
 
 parent_keytring = [
     "https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/keys/main.json",
@@ -121,6 +122,7 @@ if CONFIRMATION == "Y" or CONFIRMATION == "y":
     download_file(DOWNLOAD_URL2, "run.py")
     download_file(DOWNLOAD_URL3, "update.py")
     download_file(DOWNLOAD_URL4, "interactiveFuncs.py")
+    download_file(DOWNLOAD_URL5, "install.py")
     os.chdir("..")
 
     print("STEP 3/10, downloading main dependences for compilation")
