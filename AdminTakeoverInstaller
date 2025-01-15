@@ -3,10 +3,41 @@ import psutil
 import subprocess
 import shutil
 import os
+import json
 
 DOWNLOAD_URL1="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/AdminTakeover.py"
 DOWNLOAD_URL2="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/run.py"
-DOWNLOAD_URL3=""
+DOWNLOAD_URL3="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/update.py"
+
+parent_keytring = [
+    "https://example.com",
+    "https://api.github.com",
+    "https://jsonplaceholder.typicode.com/posts/1"
+]
+
+def generate_urls_json(file_path, urls):
+    """
+    Genera un archivo JSON con una lista de URLs.
+    
+    Args:
+        file_path (str): Ruta donde se guardará el archivo JSON.
+        urls (list): Lista de URLs a guardar en el archivo.
+        
+    Returns:
+        str: Mensaje indicando el éxito o error en la creación del archivo.
+    """
+    try:
+        # Validar que `urls` es una lista
+        if not isinstance(urls, list):
+            raise ValueError("El parámetro 'urls' debe ser una lista.")
+        
+        # Guardar las URLs en el archivo JSON
+        with open(file_path, 'w') as file:
+            json.dump(urls, file, indent=4)
+        
+        return f"Archivo JSON creado exitosamente en: {file_path}"
+    except Exception as e:
+        return f"Error al crear el archivo JSON: {e}"
 
 def download_file(url, archivo_destino):
     try:
@@ -77,46 +108,56 @@ if CONFIRMATION == "Y" or CONFIRMATION == "y":
     print("please wait, the program is installing on the selected drive, it can taka a while")
     print(os.getcwd())
     os.chdir(f"{SELECTED_DISK}:/")
-    print("STEP 1/9, creating default folders")
+    print("STEP 1/10, creating default folders")
     os.mkdir("lib")
     os.mkdir("exploits")
     os.mkdir("output")
     os.mkdir("keys")
 
-    print("STEP 2/9, downloading main files")
+    print("STEP 2/10, downloading main files")
     download_file(DOWNLOAD_URL1, "AdminTakeover.py")
     os.chdir("lib")
     download_file(DOWNLOAD_URL2, "run.py")
+    download_file(DOWNLOAD_URL3, "update.py")
     os.chdir("..")
 
-    print("STEP 3/9, downloading main dependences for compilation")
+    print("STEP 3/10, downloading main dependences for compilation")
     subprocess.run(['python3', '-m', 'pip', 'install', 'pip'], shell=True, check=True)
 
-    print("STEP 4/9, creating venv enviroment")
+    print("STEP 4/10, creating venv enviroment")
     subprocess.run(['python3', '-m', 'venv', 'venv'], shell=True, check=True)
     os.chdir("venv/Scripts")
     subprocess.run(['activate.bat'], shell=True, check=True)
     os.chdir("..")
     os.chdir("..")
 
-    print("STEP 5/9, installing pip requirements for compilation")
-    subprocess.run(['pip', 'install', 'rich', 'pyinstaller'], shell=True, check=True)
+    print("STEP 5/10, installing pip requirements for compilation")
+    subprocess.run(['pip', 'install', 'rich', 'pyinstaller', 'json', 'shutil', 'psutil'], shell=True, check=True)
 
-    print("STEP 6/9, compilating program")
+    print("STEP 6/10, compilating program")
     subprocess.run(['pyinstaller', '--onefile', 'AdminTakeover.py'], shell=True, check=True)
 
-    print("STEP 7/9, copyng compiled files")
+    print("STEP 7/10, copyng compiled files")
     os.chdir("dist")
     shutil.copy("AdminTakeover.exe", "..")
     os.chdir("..")
 
-    print("STEP 8/9, testing compilated files")
+    print("STEP 8/10, testing compilated files")
     subprocess.run(['AdminTakeover.exe', 'hello'], shell=True, check=True)
 
-    print("STEP 9/9, cleaning up")
+    print("STEP 9/10, generating parent keyring")
+    os.chdir("keys")
+    message = generate_urls_json("parent-keys.json", parent_keytring)
+    print(message)
+
+    print("STEP 10/10, cleaning up")
     if CLEAN_INSTALL == "Y" or CLEAN_INSTALL == "y":
         # borrar archivos inecesarios
-        print("cleaning trash files")
+        print("cleaning temp files")
+        os.removedirs("build")
+        os.removedirs("dist")
+        os.remove("AdminTakeover.py")
+        os.remove("AdminTakeover.spec")
     print("AdminTakeover succesfully installed in device")
 elif CONFIRMATION == "":
     print("operacion cancelada con exito")
