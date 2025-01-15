@@ -1,6 +1,7 @@
 #!python3
 from lib.run import run
 from lib.update import update
+from lib.install import install
 from rich import print
 
 import argparse
@@ -28,6 +29,10 @@ run_parser.add_argument("INPUT2", type=str, help="input2", nargs="?")
 
 # Subcomando: update
 run_parser = subparsers.add_parser("update", help="update keys")
+
+# Subcomando: install
+run_parser = subparsers.add_parser("install", help="install an exploit or a plugin")
+run_parser.add_argument("package", type=str, help="package to install")
 
 args = parser.parse_args()
 
@@ -58,3 +63,5 @@ elif args.command == "run":
     run(args.EXPLOIT,args.MODE,args.INPUT1,args.INPUT2)
 elif args.command == "update":
     update()
+elif args.command == "install":
+    install(args.package)
