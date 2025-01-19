@@ -30,7 +30,10 @@ def update():
         
         # Mostrar las claves extraídas
         for key in keys:
-            console.print(f"Archivo: {key['filename']}, URL: {key['url']}")
+            url = []
+            filename = []
+            url.append() = key['url']
+            filename.append() = key['filename']
         
     except FileNotFoundError:
         print(f"Error: El archivo en la ruta {file_path} no fue encontrado.")
@@ -59,7 +62,7 @@ def update():
             task_id_1 = progress.add_task("Downloading main Keyring", total=100)
             try:
                 process1 = subprocess.Popen(
-                    f"curl -s -k {keys[0]} -o {temp_file_path1}",
+                    f"curl -s -k {url[0]} -o {temp_file_path1}",
                     shell=True
                 )
                 while process1.poll() is None:
@@ -74,7 +77,7 @@ def update():
             task_id_2 = progress.add_task("Downloading plugins keyring", total=100)
             try:
                 process2 = subprocess.Popen(
-                    f"curl -s -k {keys[1]} -o {temp_file_path2}",
+                    f"curl -s -k {url[1]} -o {temp_file_path2}",
                     shell=True
                 )
                 while process2.poll() is None:
@@ -89,7 +92,7 @@ def update():
             task_id_3 = progress.add_task("Downloading plugins keyring", total=100)
             try:
                 process3 = subprocess.Popen(
-                    f"curl -s -k {keys[2]} -o {temp_file_path3}",
+                    f"curl -s -k {url[2]} -o {temp_file_path3}",
                     shell=True
                 )
                 while process3.poll() is None:
@@ -139,7 +142,7 @@ def update():
                 task_id_1 = progress.add_task("Updating Main Keyring", total=100)
                 try:
                     process1 = subprocess.Popen(
-                        f"curl -s -k {keys[0]} -o {final_path1}",
+                        f"curl -s -k {url[0]} -o {final_path1}",
                         shell=True
                     )
                     while process1.poll() is None:
@@ -153,7 +156,7 @@ def update():
                 task_id_2 = progress.add_task("Updating Plugins Keyring", total=100)
                 try:
                     process2 = subprocess.Popen(
-                        f"curl -s -k {keys[1]} -o {final_path2}",
+                        f"curl -s -k {url[1]} -o {final_path2}",
                         shell=True
                     )
                     while process2.poll() is None:
@@ -167,7 +170,7 @@ def update():
                 task_id_3 = progress.add_task("Updating Plugins Keyring", total=100)
                 try:
                     process2 = subprocess.Popen(
-                        f"curl -s -k {keys[2]} -o {final_path3}",
+                        f"curl -s -k {url[2]} -o {final_path3}",
                         shell=True
                     )
                     while process3.poll() is None:
