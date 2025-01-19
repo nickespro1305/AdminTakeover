@@ -185,3 +185,5 @@ def update():
 
     except Exception as e:
         console.log(f"[red]Error reading JSON files: {e}")
+
+    return
