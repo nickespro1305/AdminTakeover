@@ -7,6 +7,11 @@ from rich.console import Console
 
 def update():
     console = Console()
+    
+    # Variables para almacenar los valores
+    filenames = []  # Lista para almacenar los filenames
+    urls = []  # Lista para almacenar las urls
+
     try:
         # Leer el archivo JSON
         file_path = "keys/parent-keys.json"  # Cambia esto si la ruta es diferente
@@ -17,30 +22,20 @@ def update():
         if not isinstance(data, list):
             raise ValueError("El archivo JSON no contiene una lista válida.")
         
-        # Extraer los valores de 'filename' y 'url'
-        keys = []
+        # Extraer los valores de 'filename' y 'url' y almacenarlos en las variables
         for item in data:
             if isinstance(item, dict) and 'filename' in item and 'url' in item:
-                keys.append({
-                    'filename': item['filename'],
-                    'url': item['url']
-                })
+                filenames.append(item['filename'])
+                urls.append(item['url'])
             else:
                 console.print(f"[red]Error: El objeto {item} no contiene 'filename' o 'url'[/red]")
-        
-        # Mostrar las claves extraídas
-        for key in keys:
-            url = []
-            filename = []
-            url.append(key['url'])
-            filename.append(key['filename'])
-        
-    except FileNotFoundError:
-        print(f"Error: El archivo en la ruta {file_path} no fue encontrado.")
-    except json.JSONDecodeError:
-        print(f"Error: Hubo un problema al parsear el archivo JSON. Verifica su formato.")
+
+        # Ahora las variables 'filenames' y 'urls' contienen los valores extraídos
+        console.print(f"[green]Filnames: {filenames}[/green]")
+        console.print(f"[green]URLs: {urls}[/green]")
+
     except Exception as e:
-        print(f"Error inesperado: {e}")
+        console.print(f"[red]Error al leer el archivo JSON: {e}[/red]")
 
 
 
@@ -62,7 +57,7 @@ def update():
             task_id_1 = progress.add_task("Downloading main Keyring", total=100)
             try:
                 process1 = subprocess.Popen(
-                    f"curl -s -k {url[0]} -o {temp_file_path1}",
+                    f"curl -s -k {urls[0]} -o {temp_file_path1}",
                     shell=True
                 )
                 while process1.poll() is None:
@@ -77,7 +72,7 @@ def update():
             task_id_2 = progress.add_task("Downloading plugins keyring", total=100)
             try:
                 process2 = subprocess.Popen(
-                    f"curl -s -k {url[1]} -o {temp_file_path2}",
+                    f"curl -s -k {urls[1]} -o {temp_file_path2}",
                     shell=True
                 )
                 while process2.poll() is None:
@@ -92,7 +87,7 @@ def update():
             task_id_3 = progress.add_task("Downloading plugins keyring", total=100)
             try:
                 process3 = subprocess.Popen(
-                    f"curl -s -k {url[2]} -o {temp_file_path3}",
+                    f"curl -s -k {urls[2]} -o {temp_file_path3}",
                     shell=True
                 )
                 while process3.poll() is None:
@@ -142,7 +137,7 @@ def update():
                 task_id_1 = progress.add_task("Updating Main Keyring", total=100)
                 try:
                     process1 = subprocess.Popen(
-                        f"curl -s -k {url[0]} -o {final_path1}",
+                        f"curl -s -k {urls[0]} -o {final_path1}",
                         shell=True
                     )
                     while process1.poll() is None:
@@ -156,7 +151,7 @@ def update():
                 task_id_2 = progress.add_task("Updating Plugins Keyring", total=100)
                 try:
                     process2 = subprocess.Popen(
-                        f"curl -s -k {url[1]} -o {final_path2}",
+                        f"curl -s -k {urls[1]} -o {final_path2}",
                         shell=True
                     )
                     while process2.poll() is None:
@@ -170,7 +165,7 @@ def update():
                 task_id_3 = progress.add_task("Updating Plugins Keyring", total=100)
                 try:
                     process2 = subprocess.Popen(
-                        f"curl -s -k {url[2]} -o {final_path3}",
+                        f"curl -s -k {urls[2]} -o {final_path3}",
                         shell=True
                     )
                     while process3.poll() is None:
