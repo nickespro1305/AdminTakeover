@@ -1,6 +1,6 @@
 #!python3
 from lib.run import run
-from lib.update import update
+from lib.update import *
 from lib.install import install
 from rich import print
 
