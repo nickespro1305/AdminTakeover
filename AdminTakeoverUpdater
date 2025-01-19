@@ -1,0 +1,102 @@
+import json
+import subprocess
+import os
+import tempfile
+from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
+from rich.console import Console
+from rich.pretty import Pretty
+
+def compare_main_version(config_file_path):
+    console = Console()
+
+    # Leer el archivo de configuración para obtener la URL y el nombre de archivo
+    try:
+        with open(config_file_path, "r") as config_file:
+            config_data = json.load(config_file)
+
+        # Buscar la entrada para main.json
+        main_entry = next((entry for entry in config_data if entry.get("filename") == "main.json"), None)
+        if not main_entry:
+            raise ValueError("main.json not found in the configuration file.")
+
+        filename = main_entry.get("filename")
+        url = main_entry.get("url")
+
+        if not filename or not url:
+            raise ValueError("Invalid configuration for main.json.")
+
+    except Exception as e:
+        console.log(f"[red]Error reading configuration file: {e}")
+        return
+
+    # Crear un archivo temporal para almacenar el JSON remoto
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
+        temp_file_path = temp_file.name
+
+    with Progress(
+        TextColumn("[bold blue]{task.description}", justify="right"),
+        BarColumn(),
+        "[progress.percentage]{task.percentage:>3.1f}%",
+        TimeRemainingColumn(),
+    ) as progress:
+        # Descargar el archivo remoto con una barra de progreso
+        task_id = progress.add_task("Downloading main.json", total=100)
+        try:
+            process = subprocess.Popen(
+                f"curl -s -k {url} -o {temp_file_path}",
+                shell=True
+            )
+            while process.poll() is None:
+                progress.update(task_id, advance=5)
+                progress.refresh()
+            progress.update(task_id, completed=100)
+        except Exception as e:
+            console.log(f"[red]Error downloading remote main.json: {e}")
+            return
+
+    # Leer los archivos JSON y mostrar las partes de "version"
+    try:
+        with open(f"keys/{filename}", "r") as local_file, open(temp_file_path, "r") as remote_file:
+            local_json = json.load(local_file)
+            remote_json = json.load(remote_file)
+
+        # Extraer las partes relacionadas con "version"
+        local_version = local_json.get("version", "No 'version' key found")
+        remote_version = remote_json.get("version", "No 'version' key found")
+
+        # Mostrar las versiones
+        console.print("[bold green]Local main.json version section:[/bold green]")
+        console.print(Pretty({"version": local_version}))
+
+        console.print("[bold blue]Remote main.json version section:[/bold blue]")
+        console.print(Pretty({"version": remote_version}))
+
+    except Exception as e:
+        console.log(f"[red]Error processing JSON files for main.json: {e}")
+
+    return remote_json
+
+
+if __name__ == "__main__":
+    console = Console()
+    config_file_path = "keys/parent-keys.json"
+
+    remote_json = compare_main_version(config_file_path)
+
+    CONFIRMATION = console.input("[blue]Do you want to continue?[/blue] [red]y/n[/red]:")
+    if CONFIRMATION == "Y" or CONFIRMATION == "y":
+        # comenzar a instalar la actualización
+        console.print("[blue]Step[/blue] [purple]1/10[/purple], [bold blue]Creating controlled enviroment[/bold blue]")
+        os.mkdir("UPDATE_ENV")
+        os.chdir("UPDATE_ENV")
+
+        console.print("[blue]Step[/blue] [purple]2/10[/purple], [bold blue]Downloading New Version installer[/bold blue]")
+        installer_url = remote_json.get("update-installer", "No 'version' key found")
+        resultado = subprocess.run(['curl', '-k', '-o', "AdminTakeoverInstaller", installer_url], shell=True, check=True)
+        if resultado.returncode == 0:
+            print(f"Installer downloaded successfully")
+        
+        console.print("[blue]Step[/blue] [purple]3/10[/purple], [bold blue]Running the installer in Scripted Mode[/bold blue]")
+        resultado = subprocess.run(['curl', '-k', '-o', "AdminTakeoverInstaller", installer_url], shell=True, check=True)
+    else:
+        console.print("[red]Installation aborted by user.[/red]")

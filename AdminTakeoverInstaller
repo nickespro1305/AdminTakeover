@@ -1,9 +1,29 @@
 #!python3
 import psutil
+import argparse
 import subprocess
 import shutil
 import os
 import json
+
+parser = argparse.ArgumentParser(
+        description="Bypass windows administrator password requirement popup"
+    )
+
+subparsers = parser.add_subparsers(
+    title="Comandos",
+    description="Comandos disponibles",
+    dest="command",
+    required=True
+)
+
+# Subcomando: install
+hello_parser = subparsers.add_parser("install", help="install AdminTakeover")
+
+# Subcomando: install-from-script
+hello_parser = subparsers.add_parser("install-from-script", help="install AdminTakeover from a script, this includes aditional parameters like the directory or other options")
+
+args = parser.parse_args()
 
 DOWNLOAD_URL1="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/AdminTakeover.py"
 DOWNLOAD_URL2="https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/lib/run.py"
@@ -19,12 +39,12 @@ parent_keytring = [
 
 def generate_urls_json(file_path, urls):
     """
-    Genera un archivo JSON con una lista de URLs.
-    
+    Genera un archivo JSON con una lista de diccionarios que contienen filenames y URLs.
+
     Args:
         file_path (str): Ruta donde se guardará el archivo JSON.
         urls (list): Lista de URLs a guardar en el archivo.
-        
+
     Returns:
         str: Mensaje indicando el éxito o error en la creación del archivo.
     """
@@ -32,11 +52,17 @@ def generate_urls_json(file_path, urls):
         # Validar que `urls` es una lista
         if not isinstance(urls, list):
             raise ValueError("El parámetro 'urls' debe ser una lista.")
-        
-        # Guardar las URLs en el archivo JSON
+
+        # Crear la lista de diccionarios con filename y url
+        data = []
+        for url in urls:
+            filename = url.split('/')[-1]  # Obtener el nombre del archivo de la URL
+            data.append({"filename": filename, "url": url})
+
+        # Guardar los datos en el archivo JSON
         with open(file_path, 'w') as file:
-            json.dump(urls, file, indent=4)
-        
+            json.dump(data, file, indent=4)
+
         return f"Archivo JSON creado exitosamente en: {file_path}"
     except Exception as e:
         return f"Error al crear el archivo JSON: {e}"
@@ -60,62 +86,130 @@ def download_file(url, archivo_destino):
 
 ##############################################
 #                                            #
-#                                            #
+#        Normal Install                      #
 ##############################################
 
-print("Welcome to the AdminTakeover instalation assistant")
-print("Please Select a drive to start the install, just put the letter")
+if args.command == "install":
+    print("Welcome to the AdminTakeover instalation assistant")
+    print("Please Select a drive to start the install, just put the letter")
 
-for particion in psutil.disk_partitions(all=False):
-    print(f"Disk: {particion.device}")
-    print(f"  MountPoint: {particion.mountpoint}")
-    try:
-        uso = psutil.disk_usage(particion.mountpoint)
-        print(f"  Total Space: {uso.total / (1024**3):.2f} GB")
-        print(f"  Used Percentage: {uso.percent}%")
-    except PermissionError:
-        print("  error tryng to access the drive")
-    print()
-
-SELECTED_DISK = input("[*]")
-
-# confirmacion de disco
-for particion in psutil.disk_partitions(all=False):
-    if particion.device.startswith(SELECTED_DISK.upper()):
-        print(f"Información del disco {SELECTED_DISK.upper()}:")
-        print(f"  Punto de montaje: {particion.mountpoint}")
-        print(f"  Sistema de archivos: {particion.fstype}")
+    for particion in psutil.disk_partitions(all=False):
+        print(f"Disk: {particion.device}")
+        print(f"  MountPoint: {particion.mountpoint}")
         try:
             uso = psutil.disk_usage(particion.mountpoint)
-            print(f"  Espacio total: {uso.total / (1024**3):.2f} GB")
-            print(f"  Espacio usado: {uso.used / (1024**3):.2f} GB")
-            print(f"  Espacio libre: {uso.free / (1024**3):.2f} GB")
-            print(f"  Porcentaje usado: {uso.percent}%")
+            print(f"  Total Space: {uso.total / (1024**3):.2f} GB")
+            print(f"  Used Percentage: {uso.percent}%")
         except PermissionError:
-            print("  No se tienen permisos para acceder a esta partición.")
+            print("  error tryng to access the drive")
+        print()
 
-print(f"Are you sure than you want to continue with {SELECTED_DISK}?")
-CONFIRMATION = input("[y/N]")
+    SELECTED_DISK = input("[*]")
 
-if CONFIRMATION == "Y" or CONFIRMATION == "y":
-    # dejar elegir al usuario el tipo de compilacion deseada
-    # print("select the compilation flavour")
-    # print("[Red]: fastest, DETECTED BY ANTIVIRUS")
-    # print("[Purple]: offuscated, heaviest, requires python on every target to use")
-    # flavour = input("[Red/Purple]")
-    
-    print("Do you want to do a clean install?")
-    CLEAN_INSTALL = input("[y/N]")
+    # confirmacion de disco
+    for particion in psutil.disk_partitions(all=False):
+        if particion.device.startswith(SELECTED_DISK.upper()):
+            print(f"Información del disco {SELECTED_DISK.upper()}:")
+            print(f"  Punto de montaje: {particion.mountpoint}")
+            print(f"  Sistema de archivos: {particion.fstype}")
+            try:
+                uso = psutil.disk_usage(particion.mountpoint)
+                print(f"  Espacio total: {uso.total / (1024**3):.2f} GB")
+                print(f"  Espacio usado: {uso.used / (1024**3):.2f} GB")
+                print(f"  Espacio libre: {uso.free / (1024**3):.2f} GB")
+                print(f"  Porcentaje usado: {uso.percent}%")
+            except PermissionError:
+                print("  No se tienen permisos para acceder a esta partición.")
+
+    print(f"Are you sure than you want to continue with {SELECTED_DISK}?")
+    CONFIRMATION = input("[y/N]")
+
+    if CONFIRMATION == "Y" or CONFIRMATION == "y":
+        # dejar elegir al usuario el tipo de compilacion deseada
+        # print("select the compilation flavour")
+        # print("[Red]: fastest, DETECTED BY ANTIVIRUS")
+        # print("[Purple]: offuscated, heaviest, requires python on every target to use")
+        # flavour = input("[Red/Purple]")
+
+        print("Do you want to do a clean install?")
+        CLEAN_INSTALL = input("[y/N]")
+
+        print("please wait, the program is installing on the selected drive, it can taka a while")
+        print(os.getcwd())
+        os.chdir(f"{SELECTED_DISK}:/")
+        print("STEP 1/10, creating default folders")
+        os.mkdir("lib")
+        os.mkdir("exploits")
+        os.mkdir("sandbox")
+        os.mkdir("keys")
+
+        print("STEP 2/10, downloading main files")
+        download_file(DOWNLOAD_URL1, "AdminTakeover.py")
+        os.chdir("lib")
+        download_file(DOWNLOAD_URL2, "run.py")
+        download_file(DOWNLOAD_URL3, "update.py")
+        download_file(DOWNLOAD_URL4, "interactiveFuncs.py")
+        download_file(DOWNLOAD_URL5, "install.py")
+        os.chdir("..")
+
+        print("STEP 3/10, downloading main dependences for compilation")
+        subprocess.run(['python3', '-m', 'pip', 'install', 'pip'], shell=True, check=True)
+
+        print("STEP 4/10, creating venv enviroment")
+        subprocess.run(['python3', '-m', 'venv', 'venv'], shell=True, check=True)
+        os.chdir("venv/Scripts")
+        subprocess.run(['activate.bat'], shell=True, check=True)
+        os.chdir("..")
+        os.chdir("..")
+
+        print("STEP 5/10, installing pip requirements for compilation")
+        subprocess.run(['pip', 'install', 'rich', 'pyinstaller', 'psutil'], shell=True, check=True)
+
+        print("STEP 6/10, compilating program")
+        subprocess.run(['pyinstaller', '--onefile', 'AdminTakeover.py'], shell=True, check=True)
+
+        print("STEP 7/10, copyng compiled files")
+        os.chdir("dist")
+        shutil.copy("AdminTakeover.exe", "..")
+        os.chdir("..")
+
+        print("STEP 8/10, testing compilated files")
+        subprocess.run(['AdminTakeover.exe', 'hello'], shell=True, check=True)
+
+        print("STEP 9/10, generating parent keyring")
+        os.chdir("keys")
+        message = generate_urls_json("parent-keys.json", parent_keytring)
+        print(message)
+        os.chdir("..")
+
+        print("STEP 10/10, cleaning up")
+        if CLEAN_INSTALL == "Y" or CLEAN_INSTALL == "y":
+            # borrar archivos inecesarios
+            print("cleaning temp files")
+            shutil.rmtree("build")
+            shutil.rmtree("dist")
+            os.remove("AdminTakeover.py")
+            os.remove("AdminTakeover.spec")
+        print("AdminTakeover succesfully installed in device")
+    elif CONFIRMATION == "":
+        print("operacion cancelada con exito")
+    else:
+        print("operacion cancelada con exito")
+
+##############################################
+#                                            #
+#        Install from script                 #
+##############################################
+
+elif args.command == "install-from-script":
+    print("Welcome to the AdminTakeover scripted instalation assistant")
 
     print("please wait, the program is installing on the selected drive, it can taka a while")
-    print(os.getcwd())
-    os.chdir(f"{SELECTED_DISK}:/")
     print("STEP 1/10, creating default folders")
     os.mkdir("lib")
     os.mkdir("exploits")
-    os.mkdir("output")
+    os.mkdir("sandbox")
     os.mkdir("keys")
-
     print("STEP 2/10, downloading main files")
     download_file(DOWNLOAD_URL1, "AdminTakeover.py")
     os.chdir("lib")
@@ -124,47 +218,28 @@ if CONFIRMATION == "Y" or CONFIRMATION == "y":
     download_file(DOWNLOAD_URL4, "interactiveFuncs.py")
     download_file(DOWNLOAD_URL5, "install.py")
     os.chdir("..")
-
     print("STEP 3/10, downloading main dependences for compilation")
     subprocess.run(['python3', '-m', 'pip', 'install', 'pip'], shell=True, check=True)
-
     print("STEP 4/10, creating venv enviroment")
     subprocess.run(['python3', '-m', 'venv', 'venv'], shell=True, check=True)
     os.chdir("venv/Scripts")
     subprocess.run(['activate.bat'], shell=True, check=True)
     os.chdir("..")
     os.chdir("..")
-
     print("STEP 5/10, installing pip requirements for compilation")
     subprocess.run(['pip', 'install', 'rich', 'pyinstaller', 'psutil'], shell=True, check=True)
-
     print("STEP 6/10, compilating program")
     subprocess.run(['pyinstaller', '--onefile', 'AdminTakeover.py'], shell=True, check=True)
-
     print("STEP 7/10, copyng compiled files")
     os.chdir("dist")
     shutil.copy("AdminTakeover.exe", "..")
     os.chdir("..")
-
     print("STEP 8/10, testing compilated files")
     subprocess.run(['AdminTakeover.exe', 'hello'], shell=True, check=True)
-
     print("STEP 9/10, generating parent keyring")
     os.chdir("keys")
     message = generate_urls_json("parent-keys.json", parent_keytring)
     print(message)
     os.chdir("..")
-
     print("STEP 10/10, cleaning up")
-    if CLEAN_INSTALL == "Y" or CLEAN_INSTALL == "y":
-        # borrar archivos inecesarios
-        print("cleaning temp files")
-        shutil.rmtree("build")
-        shutil.rmtree("dist")
-        os.remove("AdminTakeover.py")
-        os.remove("AdminTakeover.spec")
     print("AdminTakeover succesfully installed in device")
-elif CONFIRMATION == "":
-    print("operacion cancelada con exito")
-else:
-    print("operacion cancelada con exito")

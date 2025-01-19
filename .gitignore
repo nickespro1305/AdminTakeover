@@ -2,3 +2,5 @@
 /build
 /venv
 /lib/__pycache__
+/sandbox
+/keys/parent-keys.json
