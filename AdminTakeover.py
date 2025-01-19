@@ -1,7 +1,7 @@
 #!python3
-from lib.run import run
-from lib.update import *
-from lib.install import install
+from .lib.run import run
+from .lib.update import *
+from .lib.install import install
 from rich import print
 
 import argparse

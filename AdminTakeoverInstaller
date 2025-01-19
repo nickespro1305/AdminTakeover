@@ -234,7 +234,7 @@ elif args.command == "install-from-script":
     subprocess.run(['pyinstaller', '--onefile', 'AdminTakeover.py'], shell=True, check=True)
     print("STEP 7/10, copyng compiled files")
     os.chdir("dist")
-    shutil.copy("AdminTakeover.exe", "..")
+    shutil.move("AdminTakeover.exe", "..")
     os.chdir("..")
     print("STEP 8/10, testing compilated files")
     subprocess.run(['AdminTakeover.exe', 'hello'], shell=True, check=True)
