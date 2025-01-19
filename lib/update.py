@@ -32,8 +32,8 @@ def update():
         for key in keys:
             url = []
             filename = []
-            url.append() = key['url']
-            filename.append() = key['filename']
+            url.append(key['url'])
+            filename.append(key['filename'])
         
     except FileNotFoundError:
         print(f"Error: El archivo en la ruta {file_path} no fue encontrado.")

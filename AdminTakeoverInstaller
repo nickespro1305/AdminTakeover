@@ -168,7 +168,7 @@ if args.command == "install":
         subprocess.run(['pip', 'install', 'rich', 'pyinstaller', 'psutil'], shell=True, check=True)
 
         print("STEP 6/10, compilating program")
-        subprocess.run(['pyinstaller', '--onefile', '--hidden-import', '--add-data', '"lib;lib"', 'AdminTakeover.py'], shell=True, check=True)
+        subprocess.run(['pyinstaller', '--onefile', '--add-data', 'lib:lib', 'AdminTakeover.py'], shell=True, check=True)
 
         print("STEP 7/10, copyng compiled files")
         os.chdir("dist")
