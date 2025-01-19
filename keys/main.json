@@ -1,4 +1,4 @@
 {
     "version"  : "5.0",
-    "update-installer": "https://raw.githubusercontent.com/nickespro1305/AdminTakeover/refs/heads/main/AdminTakeoverInstaller"
+    "update-installer": "https://github.com/nickespro1305/AdminTakeover/releases/download/ALPHA_v5.0/AdminTakeoverInstaller.exe"
 }

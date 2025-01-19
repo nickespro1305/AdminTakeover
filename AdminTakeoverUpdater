@@ -92,11 +92,11 @@ if __name__ == "__main__":
 
         console.print("[blue]Step[/blue] [purple]2/10[/purple], [bold blue]Downloading New Version installer[/bold blue]")
         installer_url = remote_json.get("update-installer", "No 'version' key found")
-        resultado = subprocess.run(['curl', '-k', '-o', "AdminTakeoverInstaller", installer_url], shell=True, check=True)
+        resultado = subprocess.run(['curl', '-k', '-o', "AdminTakeoverInstaller.exe", installer_url], shell=True, check=True)
         if resultado.returncode == 0:
             print(f"Installer downloaded successfully")
         
         console.print("[blue]Step[/blue] [purple]3/10[/purple], [bold blue]Running the installer in Scripted Mode[/bold blue]")
-        resultado = subprocess.run(['curl', '-k', '-o', "AdminTakeoverInstaller", installer_url], shell=True, check=True)
+        resultado = subprocess.run(['AdminTakeoverInstaller.exe', 'install-from-script'], shell=True, check=True)
     else:
         console.print("[red]Installation aborted by user.[/red]")
