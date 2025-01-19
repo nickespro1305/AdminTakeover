@@ -168,7 +168,7 @@ if args.command == "install":
         subprocess.run(['pip', 'install', 'rich', 'pyinstaller', 'psutil'], shell=True, check=True)
 
         print("STEP 6/10, compilating program")
-        subprocess.run(['pyinstaller', '--onefile', '--add-data', 'lib:lib', 'AdminTakeover.py'], shell=True, check=True)
+        subprocess.run(['pyinstaller', '--onefile', 'AdminTakeover.py'], shell=True, check=True)
 
         print("STEP 7/10, copyng compiled files")
         os.chdir("dist")
@@ -219,6 +219,7 @@ elif args.command == "install-from-script":
     download_file(DOWNLOAD_URL3, "update.py")
     download_file(DOWNLOAD_URL4, "interactiveFuncs.py")
     download_file(DOWNLOAD_URL5, "install.py")
+    download_file(DOWNLOAD_URL6, "__init__.py")
     os.chdir("..")
     print("STEP 3/10, downloading main dependences for compilation")
     subprocess.run(['python3', '-m', 'pip', 'install', 'pip'], shell=True, check=True)
@@ -244,4 +245,4 @@ elif args.command == "install-from-script":
     print(message)
     os.chdir("..")
     print("STEP 10/10, cleaning up")
-    print("AdminTakeover succesfully installed in device")
+    print("AdminTakeover succesfully installed")
