@@ -7,18 +7,20 @@ from rich.console import Console
 
 def update():
     console = Console()
-    # extraer las claves del archivo .json
+    # Extraer las claves del archivo .json
     try:
         # Leer el archivo JSON
         with open("/keys/parent-keys.json", 'r') as file:
-            urls = json.load(file)
+            data = json.load(file)
         
-        # Validar que el contenido sea una lista
-        if not isinstance(urls, list):
-            raise ValueError("El archivo JSON no contiene una lista válida.")
-        keys = urls
+        # Validar que el archivo tenga una clave principal y sea una lista
+        keys = data.get("keys")  # Ajusta "keys" según la clave principal del JSON
+        if not isinstance(keys, list):
+            raise ValueError("El archivo JSON no contiene una lista válida en la clave 'keys'.")
+        
     except Exception as e:
-        print(f"Error al leer el archivo JSON: {e}")
+        console.print(f"[red]Error al leer el archivo JSON: {e}")
+
 
 
     # Crear un archivo temporal para almacenar el JSON
