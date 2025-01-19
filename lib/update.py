@@ -7,15 +7,17 @@ from rich.console import Console
 
 def update():
     console = Console()
-    # Extraer las claves del archivo .json
     try:
         # Leer el archivo JSON
-        with open("/keys/parent-keys.json", 'r') as file:
+        file_path = "keys/parent-keys.json"  # Cambia esto si la ruta es diferente
+        with open(file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         
+        # Validar que el contenido sea una lista
         if not isinstance(data, list):
-            raise ValueError("El archivo JSON no contiene una lista válida en la clave 'keys'.")
-
+            raise ValueError("El archivo JSON no contiene una lista válida.")
+        
+        # Extraer los valores de 'filename' y 'url'
         keys = []
         for item in data:
             if isinstance(item, dict) and 'filename' in item and 'url' in item:
@@ -26,8 +28,16 @@ def update():
             else:
                 console.print(f"[red]Error: El objeto {item} no contiene 'filename' o 'url'[/red]")
         
+        # Mostrar las claves extraídas
+        for key in keys:
+            console.print(f"Archivo: {key['filename']}, URL: {key['url']}")
+        
+    except FileNotFoundError:
+        print(f"Error: El archivo en la ruta {file_path} no fue encontrado.")
+    except json.JSONDecodeError:
+        print(f"Error: Hubo un problema al parsear el archivo JSON. Verifica su formato.")
     except Exception as e:
-        console.print(f"[red]Error al leer el archivo JSON: {e}")
+        print(f"Error inesperado: {e}")
 
 
 
