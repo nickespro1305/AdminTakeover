@@ -13,10 +13,18 @@ def update():
         with open("/keys/parent-keys.json", 'r') as file:
             data = json.load(file)
         
-        # Validar que el archivo tenga una clave principal y sea una lista
-        keys = data.get("keys")  # Ajusta "keys" según la clave principal del JSON
-        if not isinstance(keys, list):
+        if not isinstance(data, list):
             raise ValueError("El archivo JSON no contiene una lista válida en la clave 'keys'.")
+
+        keys = []
+        for item in data:
+            if isinstance(item, dict) and 'filename' in item and 'url' in item:
+                keys.append({
+                    'filename': item['filename'],
+                    'url': item['url']
+                })
+            else:
+                console.print(f"[red]Error: El objeto {item} no contiene 'filename' o 'url'[/red]")
         
     except Exception as e:
         console.print(f"[red]Error al leer el archivo JSON: {e}")
